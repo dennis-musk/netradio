@@ -14,20 +14,20 @@
 #define MAXCHNID 	(MINCHNID + CHNNR - 1)
 
 
-#define MSG_CHNNEL_MAX  (65536/* max packet */ - 20/* ip head */ - 8 /* udp head */)
+#define MSG_CHANNEL_MAX  (65536/* max packet */ - 20/* ip head */ - 8 /* udp head */)
 
 /* channel data */
 struct msg_channel_st {
 	chnid_t id; /* must between MINCHNID and MAXCHNID */
 	uint8_t data[1];
-} __attibute__((packed));
+} __attribute__((packed));
 
 /* channel description */ 
 struct msg_listentry_st {
 	chnid_t id; /* must between MINCHNID and MAXCHNID */
 	uint16_t len;
 	uint8_t descr[1];
-} __attibute__((packed));
+} __attribute__((packed));
 
 #define MSG_LIST_MAX  (65536/* max packet */ - 20/* ip head */ - 8 /* udp head */)
 
@@ -35,7 +35,7 @@ struct msg_listentry_st {
 struct msg_list_st {
 	chnid_t id; /* must be LISTCHNID */
 	struct msg_listentry_st entry[1];
-} __attibute__((packed));
+} __attribute__((packed));
 
 
 #endif

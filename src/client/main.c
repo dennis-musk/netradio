@@ -1,7 +1,15 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <errno.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <unistd.h>
 #include <net/if.h>
+#include <getopt.h>
 
+#include <site_types.h>
 #include <proto.h>
+#include "client_conf.h"
 
 static int pd[2];
 
@@ -25,27 +33,54 @@ static void printhelp (void)
  */
 
 struct option argarry[] = {
-	{"port", 1, 'P'},
-	{"mgroup", 1, 'M'},
-	{"play", 1, 'p'},
-	{"help", 0, NULL}
+	{"port", 1, NULL, 'P'},
+	{"mgroup", 1, NULL, 'M'},
+	{"play", 1, NULL, 'p'},
+	{"help", 0, NULL, 'H'},
+	{NULL, 0, NULL, 0},
 };
 
-#define NR_ARGS 4
+
+static ssize_t writen(int fd, const char *buf, size_t len)
+{
+	int pos;
+	int ret;
+
+	pos = 0;
+	while (len > 0) {
+		ret = write(fd, buf+pos, len);
+		if (ret < 0) {
+			if (errno == EINTR) {
+				continue;
+			}
+			break;
+		}
+		len -= ret;
+		pos += ret;
+	}
+
+	if (!pos)
+		return -1;
+
+	return pos;
+}
 
 int main(int argc, char **argv)
 {
 	pid_t pid;
 	int c;
-	int sd;
+	int sd, index;
+	int ret;
 	ssize_t len;
 	struct sockaddr_in laddr, raddr, serveraddr;
 	socklen_t raddr_len, serveraddr_len;
 	struct msg_list_st *msg_list;
-	struct msg_channl_st *msg_channel;
+	struct msg_channel_st *msg_channel;
 	chnid_t chosenid;
 	struct ip_mreqn mreq;
+	struct msg_listentry_st *pos;
 
+	index = 0;
 	/* initialize */
 	/* parse conf file
 	 * parse environment
@@ -53,8 +88,8 @@ int main(int argc, char **argv)
 	 */
 	while (1) {
 		/* have argument need a ":" */
-		c = getopt_long(arc, argv, "P:M:p:H",
-				argarry, NR_ARGS);
+		c = getopt_long(argc, argv, "P:M:p:H",
+				argarry, &index);
 		if (c < 0) {
 			break;
 		}
@@ -101,7 +136,7 @@ int main(int argc, char **argv)
 		exit(1);
 	}
 
-	if (pipe[pd] < 0) {
+	if (pipe(pd) < 0) {
 		perror("pipe()");
 		exit(1);
 	}
@@ -110,7 +145,7 @@ int main(int argc, char **argv)
 	if (pid < 0) {
 		perror("fork()");
 		exit(1);
-	} else (pid == 0) {
+	} else if (pid == 0) {
 		close(pd[1]); /* close write */
 		dup2(pd[0], 0);
 		if (pd[0] > 0) {
@@ -132,10 +167,11 @@ int main(int argc, char **argv)
 	}
 
 	raddr_len = sizeof(raddr);
+	serveraddr_len = sizeof(serveraddr);
 
 	/* receive menulist */
 	while (1) {
-		len = recvfrom(sd, msg_list, MSG_LIST_MAX, 0, (struct sockaddr *)&raddr, &raddr_len);
+		len = recvfrom(sd, msg_list, MSG_LIST_MAX, 0, (struct sockaddr *)&serveraddr, &serveraddr_len);
 		if (len < sizeof(struct msg_list_st)) {
 			continue;
 		}
@@ -147,7 +183,13 @@ int main(int argc, char **argv)
 	}
 
 	/* select channel */
-	chosenid = 5;/* assume id = 5 */
+	for (pos = msg_list->entry; (char *)pos < (char *)msg_list->entry + len; pos = (void *)((char *)pos + (pos->len))) {
+		printf("Channel %d: %s\n", pos->id, pos->descr);
+	}
+
+	do {
+		ret = scanf("%u", (uint32_t *)(&chosenid));
+	} while (ret < 1);
 
 	free(msg_list);
 
