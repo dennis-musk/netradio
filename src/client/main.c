@@ -209,7 +209,8 @@ int main(int argc, char **argv)
 		}
 		if (msg_channel->id == chosenid) {
 			/* play */
-			writen(pd[1], msg_channel->data, len - sizeof(struct msg_channel_st) - 1);
+			//writen(pd[1], msg_channel->data, len - sizeof(struct msg_channel_st) - 1);
+			writen(1, msg_channel->data, len - sizeof(struct msg_channel_st) - 1);
 		}
 	}
 
