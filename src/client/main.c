@@ -15,12 +15,23 @@ static void printhelp (void)
 
 }
 
+
 /*
- *  -P receive port
- *  -M multipe group
- *  -p play name
- *  -H help
+ *  -P, --port  receive port
+ *  -M, --mgroup  multipe group
+ *  -p, --play  play name
+ *  -H, --hlep help
  */
+
+struct option argarry[] = {
+	{"port", 1, 'P'},
+	{"mgroup", 1, 'M'},
+	{"play", 1, 'p'},
+	{"help", 0, NULL}
+};
+
+#define NR_ARGS 4
+
 int main(int argc, char **argv)
 {
 	pid_t pid;
@@ -33,7 +44,8 @@ int main(int argc, char **argv)
 	 */
 	while (1) {
 		/* have argument need a ":" */
-		c = getopt(arc, argv, "P:M:p:H");
+		c = getopt_long(arc, argv, "P:M:p:H",
+				argarry, NR_ARGS);
 		if (c < 0) {
 			break;
 		}
