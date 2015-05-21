@@ -2,8 +2,18 @@
 
 #include <proto.h>
 
-
 static int pd[2];
+
+struct client_conf_st client_conf = {
+	.rcvport = DEFAULT_RCVPORT,
+	.mgroup = DEFAULT_MGROUP,
+	.player_cmd = DEFAULT_PLAYCMD
+};
+
+static void printhelp (void)
+{
+
+}
 
 /*
  *  -P receive port
@@ -14,8 +24,37 @@ static int pd[2];
 int main(int argc, char **argv)
 {
 	pid_t pid;
+	int c;
 
 	/* initialize */
+	/* parse configure file
+	 * parse environment
+	 * parse command line
+	 */
+	while (1) {
+		/* have argument need a ":" */
+		c = getopt(arc, argv, "P:M:p:H");
+		if (c < 0) {
+			break;
+		}
+		switch (c) {
+			case 'P':
+				client_conf.rcvport = optarg;
+				break;
+			case 'M':
+				client_conf.mgroup = optarg;
+				break;
+			case 'p':
+				client_conf.player_cmd = optarg;
+				break;
+			case 'H':
+				printhelp();
+				exit(0);
+			default:
+				abort();
+		}
+	}
+
 	if (pipe[pd] < 0) {
 		perror("pipe()");
 		exit(1);
@@ -33,7 +72,7 @@ int main(int argc, char **argv)
 		}
 
 		/* child, run decorder */
-		execl("/usr/bin/mpg123", "mpg123", "-"/* stdin/stdout */, NULL);
+		execl("/bin/sh", "sh", "-c", client_conf.player_cmd,  NULL);
 		exit(0);
 	}
 
