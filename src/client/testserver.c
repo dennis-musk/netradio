@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <string.h>
 
 #include <site_types.h>
 #include <proto.h>
@@ -33,8 +34,6 @@ int main(void)
 		exit(1);
 	}   
 
-
-
 	listbuf = malloc(28);
 	if (listbuf == NULL) {
 		perror("malloc");
@@ -43,10 +42,15 @@ int main(void)
 
 	listbuf->id = LISTCHNID;
 	tmp = listbuf->entry;
-	for (i=0; i < 3; ++i) { 
+	for (i = 0; i < 3; ++i) { 
 		tmp->id = id[i];
 		tmp->len = htons(9);
-		tmp->descr, descr[i];	
+		memcpy(tmp->descr, descr[i], 6);
+
+		//printf("sizeof(struct msg_list_st) is %d\n", sizeof(struct msg_list_st));
+		//printf("sizeof(truct msg_channel_st) is %d\n", sizeof(struct msg_channel_st));
+		//printf("id is %d, len is %d, %s, %s\n", tmp->id, tmp->len, descr[i], tmp->descr);
+
 		tmp = (void *)((char *)tmp + 9);
 	}
 

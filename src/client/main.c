@@ -183,13 +183,17 @@ int main(int argc, char **argv)
 	}
 
 	/* select channel */
-	for (pos = msg_list->entry; (char *)pos < (char *)msg_list->entry + len; pos = (void *)((char *)pos + (pos->len))) {
+	for (pos = msg_list->entry; (char *)pos < (char *)msg_list + len; pos = (void *)((char *)pos + ntohs(pos->len))) {
 		printf("Channel %d: %s\n", pos->id, pos->descr);
+		//printf("head is %p, pos = %p, len = %d, next!\n", msg_list, pos, ntohs(pos->len));
 	}
 
 	do {
+		printf("please input channid : \n");
 		ret = scanf("%u", (uint32_t *)(&chosenid));
 	} while (ret < 1);
+
+	printf("Chosenid is %d\n", chosenid);
 
 	free(msg_list);
 
