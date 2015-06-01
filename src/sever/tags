@@ -1,0 +1,110 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+DEFAULT_IF	server_conf.h	22;"	d	language:C++
+DEFAULT_MEDIADIR	server_conf.h	21;"	d	language:C++
+DESC_FNAME	medialib.h	7;"	d	language:C++
+MEDIALIB_H	medialib.h	2;"	d	language:C++
+MP3_PARTERN	medialib.h	6;"	d	language:C++
+MYTBF_H	mytbf.h	2;"	d	language:C++
+PATHSIZE	medialib.c	8;"	d	language:C	file:
+SERVER_CONF_H	server_conf.h	2;"	d	language:C++
+SERVER_H	sever.h	2;"	d	language:C++
+TBFMAX	mytbf.c	7;"	d	language:C	file:
+THR_CHANEL_H	thr_channel.h	2;"	d	language:C++
+THR_LIST_H	thr_list.h	2;"	d	language:C++
+burst	mytbf.c	/^	int burst;$/;"	m	language:C	struct:mytbf_st	file:
+channel	medialib.c	/^static struct channel_context_st channel[CHNNR];$/;"	v	language:C	typeref:struct:channel_context_st	file:
+channel_context_st	medialib.c	/^struct channel_context_st {$/;"	s	language:C	file:
+channel_context_st::desc	medialib.c	/^	char *desc;$/;"	m	language:C	struct:channel_context_st	file:
+channel_context_st::id	medialib.c	/^	chnid_t id;$/;"	m	language:C	struct:channel_context_st	file:
+channel_context_st::mp3glob	medialib.c	/^	glob_t mp3glob;$/;"	m	language:C	struct:channel_context_st	file:
+channel_context_st::offset	medialib.c	/^	off_t offset;$/;"	m	language:C	struct:channel_context_st	file:
+channel_context_st::pos	medialib.c	/^	int pos;$/;"	m	language:C	struct:channel_context_st	file:
+channel_context_st::tbf	medialib.c	/^	mytbuf_t *tbf;$/;"	m	language:C	struct:channel_context_st	file:
+chnid	thr_channel.c	/^	chnid_t chnid;$/;"	m	language:C	struct:thr_channel_entry_st	file:
+cond	mytbf.c	/^	pthread_con_t cond;$/;"	m	language:C	struct:mytbf_st	file:
+cps	mytbf.c	/^	int cps;$/;"	m	language:C	struct:mytbf_st	file:
+daemon_exit	main.c	/^static void daemon_exit(int s)$/;"	f	language:C	file:	signature:(int s)
+daemonize	main.c	/^static void daemonize(void)$/;"	f	language:C	file:	signature:(void)
+desc	medialib.c	/^	char *desc;$/;"	m	language:C	struct:channel_context_st	file:
+desc	medialib.h	/^	char *desc;$/;"	m	language:C++	struct:mlib_listentry_st
+get_free_pos	mytbf.c	/^static int get_free_pos(void)$/;"	f	language:C	file:	signature:(void)
+id	medialib.c	/^	chnid_t id;$/;"	m	language:C	struct:channel_context_st	file:
+id	medialib.h	/^	chnid_t id;$/;"	m	language:C++	struct:mlib_listentry_st
+ifname	server_conf.h	/^	char *ifname;$/;"	m	language:C++	struct:server_conf_st
+list	main.c	/^static struct mlib_listentry_st *list;$/;"	v	language:C	typeref:struct:mlib_listentry_st	file:
+list_size	main.c	/^static int list_size;$/;"	v	language:C	file:
+main	main.c	/^int main(int argc, char **argv)$/;"	f	language:C	signature:(int argc, char **argv)
+media_dir	server_conf.h	/^	char *media_dir;$/;"	m	language:C++	struct:server_conf_st
+mgroup	server_conf.h	/^	char *mgroup;$/;"	m	language:C++	struct:server_conf_st
+mlib_freechnlist	medialib.c	/^int mlib_freechnlist(struct mlib_listentry_st *)$/;"	f	language:C	signature:(struct mlib_listentry_st *)
+mlib_freechnlist	medialib.h	/^int mlib_freechnlist(struct mlib_listentry_st *);$/;"	p	language:C++	signature:(struct mlib_listentry_st *)
+mlib_getchnlist	medialib.c	/^int mlib_getchnlist(struct mlib_listentry_st **result, int *resum)$/;"	f	language:C	signature:(struct mlib_listentry_st **result, int *resum)
+mlib_getchnlist	medialib.h	/^int mlib_getchnlist(struct mlib_listentry_st **, int *);$/;"	p	language:C++	signature:(struct mlib_listentry_st **, int *)
+mlib_listentry_st	medialib.h	/^struct mlib_listentry_st {$/;"	s	language:C++
+mlib_listentry_st::desc	medialib.h	/^	char *desc;$/;"	m	language:C++	struct:mlib_listentry_st
+mlib_listentry_st::id	medialib.h	/^	chnid_t id;$/;"	m	language:C++	struct:mlib_listentry_st
+mlib_readchn	medialib.c	/^ssize_t mlib_readchn(chnid_t, void *, size_t)$/;"	f	language:C	signature:(chnid_t, void *, size_t)
+mlib_readchn	medialib.h	/^ssize_t mlib_readchn(chnid_t, void *, size_t);$/;"	p	language:C++	signature:(chnid_t, void *, size_t)
+mp3glob	medialib.c	/^	glob_t mp3glob;$/;"	m	language:C	struct:channel_context_st	file:
+mut	mytbf.c	/^	pthread_mutex_t mut;$/;"	m	language:C	struct:mytbf_st	file:
+mut_tbf	mytbf.c	/^static pthread_mutex_t mut_tbf = PTHREAD_MUTEX_INITIALIZER;$/;"	v	language:C	file:
+mytbf_destroy	mytbf.c	/^int mytbf_destroy(mytbf_t *)$/;"	f	language:C	signature:(mytbf_t *)
+mytbf_destroy	mytbf.h	/^int mytbf_destroy(mytbf_t *);$/;"	p	language:C++	signature:(mytbf_t *)
+mytbf_fetchtoken	mytbf.c	/^int mytbf_fetchtoken(mytbf_t *, int n)$/;"	f	language:C	signature:(mytbf_t *, int n)
+mytbf_fetchtoken	mytbf.h	/^int mytbf_fetchtoken(mytbf_t *, int n);$/;"	p	language:C++	signature:(mytbf_t *, int n)
+mytbf_init	mytbf.c	/^mytbf_t *mytbf_init(int cps, int burst)$/;"	f	language:C	signature:(int cps, int burst)
+mytbf_init	mytbf.h	/^mytbf_t *mytbf_init(int cps, int burst);$/;"	p	language:C++	signature:(int cps, int burst)
+mytbf_returntoken	mytbf.c	/^int mytbf_returntoken(mytbf_t *, int n)$/;"	f	language:C	signature:(mytbf_t *, int n)
+mytbf_returntoken	mytbf.h	/^int mytbf_returntoken(mytbf_t *, int n);$/;"	p	language:C++	signature:(mytbf_t *, int n)
+mytbf_st	mytbf.c	/^struct mytbf_st {$/;"	s	language:C	file:
+mytbf_st::burst	mytbf.c	/^	int burst;$/;"	m	language:C	struct:mytbf_st	file:
+mytbf_st::cond	mytbf.c	/^	pthread_con_t cond;$/;"	m	language:C	struct:mytbf_st	file:
+mytbf_st::cps	mytbf.c	/^	int cps;$/;"	m	language:C	struct:mytbf_st	file:
+mytbf_st::mut	mytbf.c	/^	pthread_mutex_t mut;$/;"	m	language:C	struct:mytbf_st	file:
+mytbf_st::token	mytbf.c	/^	int token;$/;"	m	language:C	struct:mytbf_st	file:
+mytbf_t	mytbf.h	/^typedef void mytbf_t;$/;"	t	language:C++
+nextpos	thr_channel.c	/^static int nextpos = 0;$/;"	v	language:C	file:
+offset	medialib.c	/^	off_t offset;$/;"	m	language:C	struct:channel_context_st	file:
+path2entry	medialib.c	/^static struct channel_context_st *path2entry(const char *)$/;"	f	language:C	file:	signature:(const char *)
+pos	medialib.c	/^	int pos;$/;"	m	language:C	struct:channel_context_st	file:
+rcv_port	server_conf.h	/^	char *rcv_port;$/;"	m	language:C++	struct:server_conf_st
+run_daemon	server_conf.h	/^	run_daemon,$/;"	e	language:C++	enum:__anon1
+run_foregound	server_conf.h	/^	run_foregound$/;"	e	language:C++	enum:__anon1
+runmode	server_conf.h	/^	char *runmode;$/;"	m	language:C++	struct:server_conf_st
+sbuf	thr_channel.c	/^struct msg_channel_st *sbuf;$/;"	v	language:C	typeref:struct:thr_channel_entry_st
+server_conf	main.c	/^struct server_conf_st server_conf = {$/;"	v	language:C	typeref:struct:server_conf_st
+server_conf_st	server_conf.h	/^struct server_conf_st{$/;"	s	language:C++
+server_conf_st::ifname	server_conf.h	/^	char *ifname;$/;"	m	language:C++	struct:server_conf_st
+server_conf_st::media_dir	server_conf.h	/^	char *media_dir;$/;"	m	language:C++	struct:server_conf_st
+server_conf_st::mgroup	server_conf.h	/^	char *mgroup;$/;"	m	language:C++	struct:server_conf_st
+server_conf_st::rcv_port	server_conf.h	/^	char *rcv_port;$/;"	m	language:C++	struct:server_conf_st
+server_conf_st::runmode	server_conf.h	/^	char *runmode;$/;"	m	language:C++	struct:server_conf_st
+serversd	main.c	/^int serversd;$/;"	v	language:C
+socket_init	main.c	/^static int socket_init()$/;"	f	language:C	file:
+tbf	medialib.c	/^	mytbuf_t *tbf;$/;"	m	language:C	struct:channel_context_st	file:
+tbf	mytbf.c	/^static struct mytbf_st *tbf[TBFMAX];$/;"	v	language:C	typeref:struct:mytbf_st	file:
+thr_channel	thr_channel.c	/^static void *thr_channel(void *unused)$/;"	f	language:C	file:	signature:(void *unused)
+thr_channel_create	thr_channel.c	/^int thr_channel_create(struct mlib_listentry_st *ptr)$/;"	f	language:C	signature:(struct mlib_listentry_st *ptr)
+thr_channel_create	thr_channel.h	/^int thr_channel_create(struct mlib_listentry_st *);$/;"	p	language:C++	signature:(struct mlib_listentry_st *)
+thr_channel_destroy	thr_channel.c	/^int thr_channel_destroy(struct mlib_listentry_st *ptr)$/;"	f	language:C	signature:(struct mlib_listentry_st *ptr)
+thr_channel_destroy	thr_channel.h	/^int thr_channel_destroy(struct mlib_listentry_st *);$/;"	p	language:C++	signature:(struct mlib_listentry_st *)
+thr_channel_destroyall	thr_channel.c	/^int thr_channel_destroyall(void)$/;"	f	language:C	signature:(void)
+thr_channel_destroyall	thr_channel.h	/^int thr_channel_destroyall(void);$/;"	p	language:C++	signature:(void)
+thr_channel_entry_st	thr_channel.c	/^struct thr_channel_entry_st {$/;"	s	language:C	file:
+thr_channel_entry_st::chnid	thr_channel.c	/^	chnid_t chnid;$/;"	m	language:C	struct:thr_channel_entry_st	file:
+thr_channel_entry_st::tid	thr_channel.c	/^	pthread_t tid;$/;"	m	language:C	struct:thr_channel_entry_st	file:
+thr_chnnel	thr_channel.c	/^static struct thr_channel_entry_st thr_chnnel[CHNNR];$/;"	v	language:C	typeref:struct:thr_channel_entry_st	file:
+thr_list	thr_list.c	/^static void *thr_list(void *unused)$/;"	f	language:C	file:	signature:(void *unused)
+thr_list_create	thr_list.c	/^int thr_list_create(truct mlib_listentry_st **, int)$/;"	f	language:C	signature:(truct mlib_listentry_st **, int)
+thr_list_create	thr_list.h	/^int thr_list_create(truct mlib_listentry_st **, int);$/;"	p	language:C++	signature:(truct mlib_listentry_st **, int)
+thr_list_destroy	thr_list.c	/^int thr_list_destroy(void)$/;"	f	language:C	signature:(void)
+thr_list_destroy	thr_list.h	/^int thr_list_destroy(void);$/;"	p	language:C++	signature:(void)
+thr_timer	mytbf.c	/^static void *thr_timer(void *unused)$/;"	f	language:C	file:	signature:(void *unused)
+tid	thr_channel.c	/^	pthread_t tid;$/;"	m	language:C	struct:thr_channel_entry_st	file:
+tid_list	thr_list.c	/^static pthrad_t tid_list;$/;"	v	language:C	file:
+token	mytbf.c	/^	int token;$/;"	m	language:C	struct:mytbf_st	file:

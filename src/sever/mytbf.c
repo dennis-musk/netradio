@@ -1,0 +1,131 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+#include <time.h>
+
+#include "mytbf.h"
+
+#define TBFMAX 	1024
+
+struct mytbf_st {
+	int cps;
+	int burst;
+	int token;
+	pthread_mutex_t mut;
+	pthread_con_t cond;
+};
+
+static struct mytbf_st *tbf[TBFMAX];
+
+static pthread_mutex_t mut_tbf = PTHREAD_MUTEX_INITIALIZER;
+
+
+static pthread_t tid;
+static pthread_once_t init_once = PTHREAD_ONCE_INIT;
+
+static void *thr_timer(void *unused)
+{
+	int i;
+	struct timespec t;
+
+
+	while (1) {
+		t.tv_sec = 1;
+		t.tv_nsec = 0;
+		while(nanosleep(&t, &t) != 0) {
+			if (errno != EINTR) {
+				syslog(LOG_ERR, "nanosleep(): %m");
+				exit(1);
+			}
+		}
+
+		for (i = 0; i < TBFMAX; ++i) {
+			if (tbuf[i]) {
+				tbf[i]->token += tbuf[i]->cps;
+				if (tbf[i]->token > tbf[i]->burst) {
+					tbf[i]->token = tbf[i]->burst;
+				}
+			}
+		}
+	}
+}
+
+
+static void module_load(void)
+{
+	int err;
+
+	err = pthread_create(&tid, NULL, thr_timer, NULL);
+	if (err) {
+		syslog(LOG_ERR, "pthread_create(): %m");
+		exit(1);
+	}
+}
+
+
+
+static int get_free_pos(void)
+{
+	int i;
+
+	for (i = 0; i < TBFMAX; ++i) {
+		if (tbf[i] == NULL) {
+			return i;
+		}
+	}
+
+	return -1;
+}
+
+
+mytbf_t *mytbf_init(int cps, int burst)
+{
+	struct mytbf_st *me;
+	int pos;
+
+	pthread_once(&init_once, module_load);
+
+	me = malloc(sizeof(*me));
+	if (me == NULL) {
+		return NULL;
+	}
+
+	me->cps = cps;
+	me->burst = burst;
+	me->token = 0;
+
+	pthread_mutex_init(&me->mut, NULL);
+	pthread_cond_int(&me->cond, NULL);
+
+	pthread_mutex_lock(&mut_tbf);
+	pos = get_free_pos();
+	if (pos < 0) {
+		pthread_mutex_unlock(&mut_tbf);
+		free(me);
+		phread_cond_destroy(&me->mut);
+		phread_mutex_destroy(&me->mut);
+		return NULL;
+	}
+
+	tbf[pos] = me;
+	pthread_mutex_unlock(&mut_tbf);
+
+
+	return me;
+}
+
+int mytbf_destroy(mytbf_t *)
+{
+
+}
+
+int mytbf_fetchtoken(mytbf_t *, int n)
+{
+
+}
+
+int mytbf_returntoken(mytbf_t *, int n)
+{
+
+}
+

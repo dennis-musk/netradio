@@ -9,15 +9,25 @@ struct server_conf_st server_conf = {
 	.rcv_port = DEFAULT_RCVPORT;
 	.mgroup = DEFAULT_MGROUP;
 	.media_dir = DEFAULT_MEDIADIR;
+	.ifname = DEFAULT_IF;
 	.runmode = run_daemon;
 };
+
+int serversd;
 
 static struct mlib_listentry_st *list;
 static int list_size;
 
 static void daemon_exit(int s)
 {
+	thr_channel_destroyall();
+	thr_list_destroy();
 	mlib_freechnlist(list);
+	if (s < 0) {
+		syslog(LOG_ERR, "Daemon failure exit.")
+		exit(1);
+	}
+	syslog(LOG_ERR, "Signal %d exit.", s);
 	closelog();
 	exit(0);
 }
@@ -57,10 +67,34 @@ static void daemonize(void)
 	return;
 }
 
+
+static int socket_init()
+{
+	struct ip_mreqn mreq;
+
+	serversd = socket(AF_INET, SOCK_DGRAM, 0);
+	if (serversd < 0) {
+		syslog(LOG_ERR, "socket(): %m");
+		exit(1);
+	}
+	
+	inet_pton(AF_INET, server_conf.mgroup, &mreq.imr_multiaddr); 
+	inet_pton(AF_INET, "0.0.0.0", &mreq.imr_address); 
+	mreq.imr_ifindex = if_nametoindex(server_conf.ifname);
+	if (setsockopt(serversd, IPPROTO_IP, IP_MULTICAST_IF, &mreq, sizeof(mreq)) < 0) {
+		syslog(LOG_ERR, "setsockopt(): %m");
+		exit(1);
+	}	
+
+
+}
+
+
 /*
  * -M MGROUP
  * -P RCVPORT
  * -D MEDIA DIR
+ * -I NIC NAME
  * -F RUN foreground
  * -f log facility
  * -H HELP
@@ -69,11 +103,11 @@ static void daemonize(void)
 
 int main(int argc, char **argv)
 {
+	int c;
+
 	signal(SIGTERM, daemon_exit);
 	signal(SIGINT, daemon_exit);
 	signal(SIGQUIT, daemon_exit);
-
-	int c;
 
 	openlog("netradio", LOG_PID|LOG_PERROR, LOG_DAEMON);
 
@@ -98,6 +132,9 @@ int main(int argc, char **argv)
 				server_conf.runmode = optarg;
 
 				break;
+			case 'I':
+				server_conf.ifname = optarg;
+				break;
 			case 'H':
 				break;
 			default:
@@ -113,6 +150,8 @@ int main(int argc, char **argv)
 		syslog(LOG_ERR, "Invalid server_conf.runmode.");
 		exit(1);
 	}
+
+	socket_init();
 
 	err = mlib_getchnlist(&list, &list_size);
 	if (err) {
