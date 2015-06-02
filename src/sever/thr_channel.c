@@ -2,14 +2,16 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <pthread.h>
+#include <syslog.h>
 
+#include <proto.h>
 #include "thr_channel.h"
 #include "medialib.h"
 
 struct thr_channel_entry_st {
 	chnid_t chnid;
 	pthread_t tid;
-}
+};
 
 struct msg_channel_st *sbuf;
 static struct thr_channel_entry_st thr_chnnel[CHNNR];

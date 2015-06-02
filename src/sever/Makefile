@@ -1,9 +1,10 @@
-CFLAGS += -I../include -pthread
+CFLAGS += -pthread -I../include
 LFLAGS += -pthread
 
-all: client
-client: main.o
-	gcc $(LDFLAGS) -o $@ $^
+all: server
+#server: main.o thr_channel.o thr_list.o medialib.o mytbf.o
+server: main.o medialib.o mytbf.o
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 clean:
-	rm *.o client -rf
+	rm *.o server -rf
