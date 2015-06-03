@@ -12,7 +12,7 @@
 #include "server_conf.h"
 #include "mytbf.h"
 
-#define PATHSIZE 	1024
+#define PATHSIZE 	512
 
 struct channel_context_st {
 	chnid_t id;
@@ -24,7 +24,7 @@ struct channel_context_st {
 	mytbf_t *tbf;
 };
 
-static struct channel_context_st channel[CHNNR];
+static struct channel_context_st channel[MAXCHNID + 1];
 
 static struct channel_context_st *path2entry(const char *path)
 {
@@ -56,7 +56,6 @@ static struct channel_context_st *path2entry(const char *path)
 		return NULL;
 	}
 
-
 	me->tbf = mytbf_init(MP3_BITRATE / 8, MP3_BITRATE * 10 / 8);
 	if (me->tbf == NULL) {
 		syslog(LOG_ERR, "mytbf_init(): %m");
@@ -78,6 +77,9 @@ static struct channel_context_st *path2entry(const char *path)
 
 	me->pos = 0;
 	me->offset = 0;
+
+	printf("open mp3 file %s\n", me->mp3glob.gl_pathv[me->pos]);
+
 	me->fd = open(me->mp3glob.gl_pathv[me->pos], O_RDONLY);
 	if (me->fd < 0) {
 		syslog(LOG_WARNING, "open(): %m");
@@ -88,7 +90,7 @@ static struct channel_context_st *path2entry(const char *path)
 
 	me->id = curr_id;
 	curr_id++;
-
+	
 	return me;
 }
 
@@ -99,6 +101,10 @@ int mlib_getchnlist(struct mlib_listentry_st **result, int *resnum)
 	struct mlib_listentry_st *ptr;
 	struct channel_context_st *res;
 	int i, num;
+
+	for (i = 0; i < MAXCHNID +1; ++i) {
+		channel[i].id = -1;
+	}
 
 	snprintf(path, PATHSIZE, "%s/*", server_conf.media_dir);
 
@@ -117,7 +123,7 @@ int mlib_getchnlist(struct mlib_listentry_st **result, int *resnum)
 	for (i = 0; i < globres.gl_pathc; ++i) {
 		res = path2entry(globres.gl_pathv[i]);
 		if (res) {
-			memcpy(channel + num, res, sizeof(*res));
+			memcpy(channel + res->id, res, sizeof(*res));
 			ptr[num].id = res->id;
 			ptr[num].desc = strdup(res->desc);
 
@@ -126,6 +132,7 @@ int mlib_getchnlist(struct mlib_listentry_st **result, int *resnum)
 	}
 
 	*result = realloc(ptr, num * sizeof(struct mlib_listentry_st));
+
 	*resnum = num;
 
 	return 0;
@@ -136,7 +143,57 @@ int mlib_freechnlist(struct mlib_listentry_st *ptr)
 
 }
 
-ssize_t mlib_readchn(chnid_t id, void *ptr, size_t n)
-{
 
+static int open_next(chnid_t id)
+{
+	int i;
+
+	for ( i = 0; i <channel[id].mp3glob.gl_pathc; ++i) {
+		channel[id].pos++;
+
+		if (channel[id].pos == channel[id].mp3glob.gl_pathc) {
+			channel[id].pos = 0;
+		}
+
+		close(channel[id].fd);
+
+		channel[id].fd = open(channel[id].mp3glob.gl_pathv[channel[id].pos], O_RDONLY);
+		if (channel[id].fd < 0) {
+			syslog(LOG_WARNING, "Open($s) : %m", channel[id].mp3glob.gl_pathv[channel[id].pos]);
+
+		} else {
+			return 0;
+		}
+	}
+	syslog(LOG_ERR, "None of mp3s in Channel %d is alailable.", id);
+	
+	exit(1);
+}
+
+ssize_t mlib_readchn(chnid_t id, void *buf, size_t size)
+{
+	ssize_t tbfsize, len;
+
+	tbfsize = mytbf_fetchtoken(channel[id].tbf, size);
+
+	while (1) {
+		//printf("fd is %d, file is %s\n", channel[id].fd, channel[id].mp3glob.gl_pathv[channel[id].pos]);
+
+		len = pread(channel[id].fd, buf, tbfsize, channel[id].offset);
+		if (len < 0) {
+			syslog(LOG_WARNING, "Media file %s read failed", channel[id].mp3glob.gl_pathv[channel[id].pos]);
+			channel[id].offset = 0;
+			open_next(id);
+		} else if (!len) {
+			channel[id].offset = 0;
+			open_next(id);
+		} else {
+			channel[id].offset += len;
+			break;
+		}
+	}
+
+	mytbf_returntoken(channel[id].tbf, tbfsize - len);
+
+	return len;
 }

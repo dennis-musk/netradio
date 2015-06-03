@@ -31,10 +31,9 @@ static int list_size;
 
 static void daemon_exit(int s)
 {
-#if 0
 	thr_channel_destroyall();
-	thr_list_destroy();
-#endif
+//	thr_list_destroy();
+
 	mlib_freechnlist(list);
 	if (s < 0) {
 		syslog(LOG_ERR, "Daemon failure exit.");
@@ -173,23 +172,23 @@ int main(int argc, char **argv)
 		exit(1);
 	}
 
+	syslog(LOG_DEBUG, "get list success, list_size = %d", list_size);
+
 	for (i = 0; i < list_size; ++i) {
-		printf("CHN: %d %s\n", list[i].id, list[i].desc);
+		printf("CHN: %d %s", list[i].id, list[i].desc);
 	}
 
-	exit(0);
-#if 0
-	thr_list_create(list, list_size);
+//	thr_list_create(list, list_size);
 
 	for (i = 0; i < list_size; ++i) {
 		thr_channel_create(list + i);
 	}
+
+	syslog(LOG_DEBUG, "%d channel thread created", i);
 
 	while(1)
 		pause();
 
 
 	exit(0);
-#endif
-
 }

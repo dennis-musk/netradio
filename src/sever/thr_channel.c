@@ -3,6 +3,8 @@
 #include <unistd.h>
 #include <pthread.h>
 #include <syslog.h>
+#include <errno.h>
+#include <string.h>
 
 #include <proto.h>
 #include "thr_channel.h"
@@ -14,16 +16,25 @@ struct thr_channel_entry_st {
 };
 
 struct msg_channel_st *sbuf;
-static struct thr_channel_entry_st thr_chnnel[CHNNR];
+static struct thr_channel_entry_st thr_channel[CHNNR];
 static int nextpos = 0;
 
-static void *thr_channel(void *unused)
+char buf[BUFSIZE];
+
+static void *thr_channel_snder(void *ptr)
 {
+	struct mlib_listentry_st *ent = ptr;
+	int len, ret;
+
+	syslog(LOG_DEBUG, "%s() woking for channel %d", __func__, ent->id);
 	while (1) {
 		pthread_testcancel();
-		mlib_readchn();
-		sbuf->;
-		sendto();
+		len = mlib_readchn(ent->id, buf, BUFSIZE);
+		
+		/* for test */
+		ret = write(1, buf, len);
+		fprintf(stderr, "%d bytes send\n", ret);
+		//sendto();
 	}
 }
 
@@ -38,14 +49,15 @@ int thr_channel_create(struct mlib_listentry_st *ptr)
 		return -ENOMEM;
 	}
 
-	if (tid_nextpos >= CHNNR) {
+	if (nextpos >= CHNNR) {
 		free(sbuf);
 		return -ENOSPC;
 	}
 
-	err = pthread_create(&thr_channel[nextpos].tid, NULL, thr_channel, NULL);
+	err = pthread_create(&thr_channel[nextpos].tid, NULL, thr_channel_snder, ptr);
 	if (err < 0) {
 		syslog(LOG_WARNING, "pthread_create(): %m");
+		free(sbuf);
 		return -err;
 	}
 
@@ -62,7 +74,7 @@ int thr_channel_destroy(struct mlib_listentry_st *ptr)
 
 	for (i = 0; i < CHNNR; ++i) {
 		if (thr_channel[i].chnid == ptr->id) {
-			if (pthread_cancel(thr_channel[i].id)) {
+			if (pthread_cancel(thr_channel[i].tid)) {
 				syslog(LOG_ERR, "The thread of channel %d", ptr->id);
 				return -ESRCH;
 			}
@@ -78,10 +90,12 @@ int thr_channel_destroy(struct mlib_listentry_st *ptr)
 
 int thr_channel_destroyall(void)
 {
+	int i;
+
 	for (i = 0; i < CHNNR; ++i) {
 		if (thr_channel[i].chnid > 0) {
-			if (pthread_cancel(thr_channel[i].id)) {
-				syslog(LOG_ERR, "The thread of channel %d", ptr->id);
+			if (pthread_cancel(thr_channel[i].tid)) {
+				syslog(LOG_ERR, "The thread of channel %d", thr_channel[i].chnid);
 				return -ESRCH;
 			}
 			thr_channel[i].chnid = -1;
