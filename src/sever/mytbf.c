@@ -139,7 +139,7 @@ int mytbf_destroy(mytbf_t *ptr)
 
 static int min(int a, int b)
 {
-	return  a > b ? a : b;
+	return  a < b ? a : b;
 }
 
 int mytbf_fetchtoken(mytbf_t *ptr, int n)

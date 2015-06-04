@@ -12,8 +12,6 @@
 #include "server_conf.h"
 #include "mytbf.h"
 
-#define PATHSIZE 	512
-
 struct channel_context_st {
 	chnid_t id;
 	char *desc;
@@ -177,7 +175,7 @@ ssize_t mlib_readchn(chnid_t id, void *buf, size_t size)
 	tbfsize = mytbf_fetchtoken(channel[id].tbf, size);
 
 	while (1) {
-		//printf("fd is %d, file is %s\n", channel[id].fd, channel[id].mp3glob.gl_pathv[channel[id].pos]);
+		printf("fd is %d, file is %s\n", channel[id].fd, channel[id].mp3glob.gl_pathv[channel[id].pos]);
 
 		len = pread(channel[id].fd, buf, tbfsize, channel[id].offset);
 		if (len < 0) {
