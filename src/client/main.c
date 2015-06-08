@@ -7,6 +7,7 @@
 #include <net/if.h>
 #include <getopt.h>
 #include <arpa/inet.h>
+#include <signal.h>
 
 #include <site_types.h>
 #include <proto.h>
@@ -25,6 +26,10 @@ static void printhelp (void)
 
 }
 
+static void usr_hanlder(int sig)
+{
+
+}
 
 /*
  *  -P, --port  receive port
@@ -80,6 +85,11 @@ int main(int argc, char **argv)
 	chnid_t chosenid;
 	struct ip_mreqn mreq;
 	struct msg_listentry_st *pos;
+	int val;
+	int count, child_pause = 1;
+
+
+	signal(SIGUSR1, usr_hanlder);
 
 	index = 0;
 	/* initialize */
@@ -127,6 +137,19 @@ int main(int argc, char **argv)
 		perror("setsockopt()");
 		exit(1);
 	}
+#if 0
+	val = 1;
+	if (setsockopt(sd, IPPROTO_IP, IP_MULTICAST_LOOP, &val, sizeof(val)) < 0 ) {
+		perror("setsockopt()");
+		exit(1);
+	}
+
+	val = 1 << 20;
+	if (setsockopt(sd, SOL_SOCKET, SO_RCVBUF, &val, sizeof(val)) < 0 ) {
+		perror("setsockopt()");
+		exit(1);
+	}
+#endif
 
 	laddr.sin_family = AF_INET;
 	laddr.sin_port = htons(atoi(client_conf.rcv_port));
@@ -152,6 +175,9 @@ int main(int argc, char **argv)
 		if (pd[0] > 0) {
 			close(pd[0]);
 		}
+
+		/* wait for data */
+		pause();
 
 		/* child, run decorder */
 		execl("/bin/sh", "sh", "-c", client_conf.player_cmd,  NULL);
@@ -205,6 +231,7 @@ int main(int argc, char **argv)
 		exit(1);
 	}
 
+	count = 0;
 	while (1) {
 		len = recvfrom(sd, msg_channel, MSG_CHANNEL_MAX, 0, (struct sockaddr *)&raddr, &raddr_len);
 		if (raddr.sin_addr.s_addr != serveraddr.sin_addr.s_addr || raddr.sin_port != serveraddr.sin_port) {
@@ -215,8 +242,14 @@ int main(int argc, char **argv)
 		}
 		if (msg_channel->id == chosenid) {
 			/* play */
-			writen(pd[1], (char *)msg_channel->data, len - sizeof(struct msg_channel_st) - 1);
+			ret = writen(pd[1], (char *)msg_channel->data, len - sizeof(chnid_t));
+			count += ret;
 			//writen(1, (char *)msg_channel->data, len - sizeof(struct msg_channel_st) - 1);
+
+			if (child_pause && count > 30000) {
+				kill(pid, SIGUSR1);
+				child_pause = 0;
+			}
 		}
 	}
 
