@@ -45,7 +45,6 @@ static void *thr_channel_snder(void *ptr)
 		pthread_testcancel();
 
 		len = mlib_readchn(ent->id, sbufp->data, datasize);
-		printf("len is %d\n", len);
 
 		sendto(serversd, sbufp, len + sizeof(chnid_t), 0, (void *)&sndaddr, sizeof(sndaddr));
 	}
@@ -54,7 +53,6 @@ static void *thr_channel_snder(void *ptr)
 int thr_channel_create(struct mlib_listentry_st *ptr)
 {
 	int err;
-	int len;
 
 	sbuf = malloc(MSG_CHANNEL_MAX);
 	if (sbuf == NULL) {

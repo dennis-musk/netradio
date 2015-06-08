@@ -10,11 +10,15 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netinet/ip.h>
+#include <arpa/inet.h>
+#include <net/if.h>
 
 #include <proto.h>
 
 #include "server_conf.h"
 #include "medialib.h"
+#include "thr_channel.h"
+#include "thr_list.h"
 
 struct server_conf_st server_conf = {
 	.rcv_port = DEFAULT_RCVPORT,
@@ -102,6 +106,8 @@ static int socket_init()
 	sndaddr.sin_family = AF_INET;
 	sndaddr.sin_port = htons(atoi(server_conf.rcv_port));
 	inet_pton(AF_INET, server_conf.mgroup, &sndaddr.sin_addr);
+
+	return 0;
 }
 
 
@@ -181,14 +187,15 @@ int main(int argc, char **argv)
 		printf("CHN: %d %s", list[i].id, list[i].desc);
 	}
 
-//	thr_list_create(list, list_size);
+	thr_list_create(list, list_size);
 
+#if 0
 	for (i = 0; i < list_size; ++i) {
 		thr_channel_create(list + i);
 	}
 
 	syslog(LOG_DEBUG, "%d channel thread created", i);
-
+#endif
 	while(1)
 		pause();
 

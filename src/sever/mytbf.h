@@ -9,7 +9,7 @@ int mytbf_destroy(mytbf_t *);
 
 int mytbf_fetchtoken(mytbf_t *, int n);
 
-int mytbf_returntoken(mytbf_t *, int n);
+void mytbf_returntoken(mytbf_t *, int n);
 
 
 #endif

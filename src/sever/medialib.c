@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <syslog.h>
 #include <glob.h>
 #include <string.h>
@@ -46,7 +47,7 @@ static struct channel_context_st *path2entry(const char *path)
 		return NULL;
 	}
 
-	close(fp);
+	fclose(fp);
 
 	me = malloc(sizeof(*me));
 	if (me == NULL) {
@@ -139,6 +140,7 @@ int mlib_getchnlist(struct mlib_listentry_st **result, int *resnum)
 int mlib_freechnlist(struct mlib_listentry_st *ptr)
 {
 
+	return 0;
 }
 
 
@@ -157,7 +159,7 @@ static int open_next(chnid_t id)
 
 		channel[id].fd = open(channel[id].mp3glob.gl_pathv[channel[id].pos], O_RDONLY);
 		if (channel[id].fd < 0) {
-			syslog(LOG_WARNING, "Open($s) : %m", channel[id].mp3glob.gl_pathv[channel[id].pos]);
+			syslog(LOG_WARNING, "Open(%s) : %m", channel[id].mp3glob.gl_pathv[channel[id].pos]);
 
 		} else {
 			return 0;
@@ -175,7 +177,7 @@ ssize_t mlib_readchn(chnid_t id, void *buf, size_t size)
 	tbfsize = mytbf_fetchtoken(channel[id].tbf, size);
 
 	while (1) {
-		printf("fd is %d, file is %s\n", channel[id].fd, channel[id].mp3glob.gl_pathv[channel[id].pos]);
+		//printf("fd is %d, file is %s\n", channel[id].fd, channel[id].mp3glob.gl_pathv[channel[id].pos]);
 
 		len = pread(channel[id].fd, buf, tbfsize, channel[id].offset);
 		if (len < 0) {

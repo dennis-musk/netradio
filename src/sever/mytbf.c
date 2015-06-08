@@ -139,7 +139,7 @@ int mytbf_destroy(mytbf_t *ptr)
 
 static int min(int a, int b)
 {
-	return  a < b ? a : b;
+	return  (a < b ? a : b);
 }
 
 int mytbf_fetchtoken(mytbf_t *ptr, int n)
@@ -158,7 +158,7 @@ int mytbf_fetchtoken(mytbf_t *ptr, int n)
 	return token;
 }
 
-int mytbf_returntoken(mytbf_t *ptr, int n)
+void mytbf_returntoken(mytbf_t *ptr, int n)
 {
 	struct mytbf_st *me = ptr;
 
