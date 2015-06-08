@@ -25,6 +25,7 @@ struct server_conf_st server_conf = {
 };
 
 int serversd;
+struct sockaddr_in sndaddr;
 
 static struct mlib_listentry_st *list;
 static int list_size;
@@ -97,8 +98,10 @@ static int socket_init()
 		syslog(LOG_ERR, "setsockopt(): %m");
 		exit(1);
 	}	
-
-
+	
+	sndaddr.sin_family = AF_INET;
+	sndaddr.sin_port = htons(atoi(server_conf.rcv_port));
+	inet_pton(AF_INET, server_conf.mgroup, &sndaddr.sin_addr);
 }
 
 

@@ -5,10 +5,14 @@
 #include <syslog.h>
 #include <errno.h>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 
 #include <proto.h>
 #include "thr_channel.h"
 #include "medialib.h"
+#include "server.h"
 
 struct thr_channel_entry_st {
 	chnid_t chnid;
@@ -19,22 +23,31 @@ struct msg_channel_st *sbuf;
 static struct thr_channel_entry_st thr_channel[CHNNR];
 static int nextpos = 0;
 
-char buf[BUFSIZE];
-
 static void *thr_channel_snder(void *ptr)
 {
 	struct mlib_listentry_st *ent = ptr;
-	int len, ret;
+	int len;
+	struct msg_channel_st *sbufp;
+	int datasize;
 
-	syslog(LOG_DEBUG, "%s() woking for channel %d", __func__, ent->id);
+
+	sbufp = malloc(MSG_CHANNEL_MAX);
+	if (sbufp == NULL) {
+		syslog(LOG_ERR, "malloc(): %m");
+		exit(1);
+	}
+
+	datasize = MSG_CHANNEL_MAX - sizeof(chnid_t);
+
+	sbufp->id = ent->id;
+
 	while (1) {
 		pthread_testcancel();
-		len = mlib_readchn(ent->id, buf, BUFSIZE);
-		
-		/* for test */
-		ret = write(1, buf, len);
-		fprintf(stderr, "%d bytes send\n", ret);
-		//sendto();
+
+		len = mlib_readchn(ent->id, sbufp->data, datasize);
+		printf("len is %d\n", len);
+
+		sendto(serversd, sbufp, len + sizeof(chnid_t), 0, (void *)&sndaddr, sizeof(sndaddr));
 	}
 }
 
