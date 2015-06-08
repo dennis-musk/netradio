@@ -14,8 +14,8 @@
 #define MAXCHNID 	(MINCHNID + CHNNR - 1)
 
 
-//#define MSG_CHANNEL_MAX  (65536/* max packet */ - 20/* ip head */ - 8 /* udp head */)
-#define MSG_CHANNEL_MAX  (512/* max packet */ - 20/* ip head */ - 8 /* udp head */)
+#define MSG_CHANNEL_MAX  (65536/* max packet */ - 20/* ip head */ - 8 /* udp head */)
+//#define MSG_CHANNEL_MAX  (512/* max packet */ - 20/* ip head */ - 8 /* udp head */)
 
 /* channel data */
 struct msg_channel_st {

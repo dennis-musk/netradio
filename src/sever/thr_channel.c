@@ -47,6 +47,8 @@ static void *thr_channel_snder(void *ptr)
 		len = mlib_readchn(ent->id, sbufp->data, datasize);
 
 		sendto(serversd, sbufp, len + sizeof(chnid_t), 0, (void *)&sndaddr, sizeof(sndaddr));
+
+		sched_yield();
 	}
 }
 

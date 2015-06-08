@@ -9,7 +9,7 @@
 
 #define PATHSIZE 1024
 #define BUFSIZE 1024
-#define MP3_BITRATE 	65536
+#define MP3_BITRATE 	(1 << 18)
 
 struct mlib_listentry_st {
 	chnid_t id;

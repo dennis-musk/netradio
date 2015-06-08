@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <net/if.h>
 #include <getopt.h>
+#include <arpa/inet.h>
 
 #include <site_types.h>
 #include <proto.h>
@@ -166,16 +167,17 @@ int main(int argc, char **argv)
 		exit(1);
 	}
 
-	raddr_len = sizeof(raddr);
 	serveraddr_len = sizeof(serveraddr);
 
 	/* receive menulist */
 	while (1) {
 		len = recvfrom(sd, msg_list, MSG_LIST_MAX, 0, (struct sockaddr *)&serveraddr, &serveraddr_len);
 		if (len < sizeof(struct msg_list_st)) {
+			fprintf(stderr, "message is too small\n");
 			continue;
 		}
 		if (msg_list->id != LISTCHNID) { /* one bye, no need order convert */
+			fprintf(stderr, "Chnid is not match\n");
 			continue;
 		}
 
@@ -213,8 +215,8 @@ int main(int argc, char **argv)
 		}
 		if (msg_channel->id == chosenid) {
 			/* play */
-			//writen(pd[1], msg_channel->data, len - sizeof(struct msg_channel_st) - 1);
-			writen(1, msg_channel->data, len - sizeof(struct msg_channel_st) - 1);
+			writen(pd[1], (char *)msg_channel->data, len - sizeof(struct msg_channel_st) - 1);
+			//writen(1, (char *)msg_channel->data, len - sizeof(struct msg_channel_st) - 1);
 		}
 	}
 

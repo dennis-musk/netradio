@@ -1,4 +1,4 @@
-CFLAGS+=-I../include
+CFLAGS+=-I../include -Wall
 
 all: client
 client: main.o

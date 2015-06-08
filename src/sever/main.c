@@ -189,13 +189,12 @@ int main(int argc, char **argv)
 
 	thr_list_create(list, list_size);
 
-#if 0
 	for (i = 0; i < list_size; ++i) {
 		thr_channel_create(list + i);
 	}
 
 	syslog(LOG_DEBUG, "%d channel thread created", i);
-#endif
+
 	while(1)
 		pause();
 
