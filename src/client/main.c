@@ -130,14 +130,14 @@ int main(int argc, char **argv)
 
 	inet_pton(AF_INET, client_conf.mgroup, &mreq.imr_multiaddr);
 	inet_pton(AF_INET, "0.0.0.0", &mreq.imr_address);
-	mreq.imr_ifindex =  if_nametoindex("eth0");
+	mreq.imr_ifindex =  if_nametoindex(DEFAULT_IF);
 
 	/* man 7 ip */
 	if (setsockopt(sd, IPPROTO_IP, IP_ADD_MEMBERSHIP, &mreq, sizeof(mreq)) < 0 ) {
 		perror("setsockopt()");
 		exit(1);
 	}
-#if 0
+#if 1
 	val = 1;
 	if (setsockopt(sd, IPPROTO_IP, IP_MULTICAST_LOOP, &val, sizeof(val)) < 0 ) {
 		perror("setsockopt()");
