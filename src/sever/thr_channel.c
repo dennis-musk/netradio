@@ -30,7 +30,6 @@ static void *thr_channel_snder(void *ptr)
 	struct msg_channel_st *sbufp;
 	int datasize;
 
-
 	sbufp = malloc(MSG_CHANNEL_MAX);
 	if (sbufp == NULL) {
 		syslog(LOG_ERR, "malloc(): %m");

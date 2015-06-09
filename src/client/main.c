@@ -59,7 +59,7 @@ static ssize_t writen(int fd, const char *buf, size_t len)
 			if (errno == EINTR) {
 				continue;
 			}
-			break;
+			return -1;
 		}
 		len -= ret;
 		pos += ret;
@@ -143,13 +143,13 @@ int main(int argc, char **argv)
 		perror("setsockopt()");
 		exit(1);
 	}
+#endif
 
 	val = 1 << 20;
 	if (setsockopt(sd, SOL_SOCKET, SO_RCVBUF, &val, sizeof(val)) < 0 ) {
 		perror("setsockopt()");
 		exit(1);
 	}
-#endif
 
 	laddr.sin_family = AF_INET;
 	laddr.sin_port = htons(atoi(client_conf.rcv_port));
@@ -243,10 +243,13 @@ int main(int argc, char **argv)
 		if (msg_channel->id == chosenid) {
 			/* play */
 			ret = writen(pd[1], (char *)msg_channel->data, len - sizeof(chnid_t));
+			if (ret < 0) {
+				perror("writen()");
+			}
 			count += ret;
 			//writen(1, (char *)msg_channel->data, len - sizeof(struct msg_channel_st) - 1);
 
-			if (child_pause && count > 30000) {
+			if (child_pause && count > 40000) {
 				kill(pid, SIGUSR1);
 				child_pause = 0;
 			}
